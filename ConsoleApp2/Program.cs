@@ -19,6 +19,15 @@ namespace ConsoleApp2
 
             Müşteri müşteri = new Müşteri(12345);
 
+            Aşçı aşçı = new Aşçı();
+
+            Garson garson    = new Garson("hasan",aşçı);
+
+
+            garson.SiparişAl(yemeks, müşteri, DateTime.Now);
+
+            müşteri.ÖdemeYap(garson);
+
 
 
         
@@ -64,13 +73,19 @@ namespace ConsoleApp2
         public int MasaNumarası { get; set; }
         public int KartNumarası { get { return kartNumarasıF / 100; }  }//123
 
-        public bool ÖdemeYap(int tutar)
+        public void ÖdemeYap(Garson garson)
         {
+
+            garson.HesapAl(MasaNumarası);
+
 
             Ödeme ödeme = new Ödeme();
 
-            return ödeme.KartİleÖdeme(kartNumarasıF);
-                
+            if (ödeme.KartİleÖdeme(kartNumarasıF))
+            {
+                Console.WriteLine("ödeme başarılı");
+            } 
+
 
         }
 
@@ -122,25 +137,30 @@ namespace ConsoleApp2
                 {
                     case "1":
                         {
-                            list.Add(menü[1]);
+                            list.Add(menü[0]);
                             break;
                         }
 
                     case "2":
                         {
-                            list.Add(menü[2]);
+                            list.Add(menü[1]);
                             break;
                         }
 
                     case "3":
                         {
-                            list.Add(menü[3]);
+                            list.Add(menü[2]);
                             break;
                         }
 
                     default:
+                        {
+
                         Console.WriteLine("seçim işlemi tamamlandı siparişleriniz alındı");
+                        control = false;
                         break;
+                
+                        }
                 }
 
 
@@ -165,14 +185,14 @@ namespace ConsoleApp2
 
             Console.WriteLine("sipariş iletildi yapılmaya başlanıyoır");
             Thread.Sleep(1000);
-            
+            Aşçı.YemekYap();
 
            
         }
 
-        public int HesapAl(int masaNumarası,Aşçı aşcı)
+        public int HesapAl(int masaNumarası)
         {
-            return aşcı.HesapOluştur(masaNumarası);
+            return Aşçı.HesapOluştur(masaNumarası);
         }
 
 
@@ -205,23 +225,24 @@ namespace ConsoleApp2
         public void SiparişAl(Sipariş sipariş)
         {
             Siparişler.Add(sipariş);
+
+            
             YemekYap();
         }
 
 
-        private void YemekYap()
+        public void YemekYap()
         {
 
             for (int i = 0; i < Siparişler.Count; i++)
             {
-                if (!Siparişler[i].Durum)
-                {
-                    Console.WriteLine(Siparişler[i].SiparişTarih.ToString() + "olan şipariş yapılmaya başlandı");
+                
+                    Console.WriteLine(Siparişler[i].SiparişTarih.ToString() + " olan şipariş yapılmaya başlandı");
                     Console.WriteLine("Masa Numarası :" + Siparişler[i].Müşteri.MasaNumarası);
                     Console.WriteLine("Garson adı :" + Siparişler[i].Garson.Adı);
                     Console.WriteLine("Yemek Sayısı :" + Siparişler[i].Yemekler.Count);
-
-                    foreach (var item in Siparişler[i].Yemekler)
+                  Thread.Sleep(1000);
+                foreach (var item in Siparişler[i].Yemekler)
                     {
                         Thread.Sleep(500);
 
@@ -232,9 +253,10 @@ namespace ConsoleApp2
                     Siparişler[i].Durum = true;
 
                     Console.WriteLine(Siparişler[i].Garson + " sipariş hazır götürebilirsin");
+                    Console.WriteLine(Siparişler[i].Müşteri.MasaNumarası + " masa numarası");
 
 
-                }
+                
 
 
             }
